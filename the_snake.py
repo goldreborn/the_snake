@@ -24,7 +24,7 @@ pygame.display.set_caption('Змейка')
 
 clock = pygame.time.Clock()
 
-# Создаем класс GameObject
+""" Создаем класс GameObject"""
 
 
 class GameObject:
@@ -33,7 +33,7 @@ class GameObject:
         self.position = position
         self.body_color = body_color
 
-    # создаём случайные координаты
+    """ создаём случайные координаты """
 
     @staticmethod
     def random_axis(cell_size):
@@ -44,7 +44,7 @@ class GameObject:
         return x, y
 
 
-# Создаем класс Snake
+""" Создаем класс Snake """
 
 
 class Snake(GameObject):
@@ -54,7 +54,7 @@ class Snake(GameObject):
     def __init__(self, position, body_color):
         super().__init__(position, body_color)
 
-    # Функция движения змейки
+    """ Функция движения змейки """
 
     def move(self):
 
@@ -90,7 +90,7 @@ class Snake(GameObject):
             self.position.insert(0, (self.position[0][0], SCREEN_HEIGHT))
 
 
-# Создаем класс Apple
+""" Создаем класс Apple"""
 
 
 class Apple(GameObject):
@@ -98,7 +98,7 @@ class Apple(GameObject):
     def __init__(self, position, body_color):
         super().__init__(position, body_color)
 
-    # Определяем случайное место для яблока
+    """ Определяем случайное место для яблока"""
 
     def randomize_position(self):
 
@@ -111,7 +111,6 @@ class Apple(GameObject):
 
 
 field.fill(BG_COLOR)
-
 
 
 def draw(field, color, axis):
@@ -176,21 +175,21 @@ def main():
 
 
 def handle_keys(game_object):
-    for event in pygame.event.get():
 
-            if event.type == pygame.QUIT:
-                pygame.quit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP and game_object.direction != 'down':
-                    game_object.direction = 'up'
-                elif event.key == pygame.K_DOWN and game_object.direction != 'up':
-                    game_object.direction = 'down'
-                elif event.key == pygame.K_LEFT and game_object.direction != 'right':
-                    game_object.direction = 'left'
-                elif event.key == pygame.K_RIGHT and game_object.direction != 'left':
-                    game_object.direction = 'right'
-                else:
-                    pass
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP and game_object.direction != 'down':
+                game_object.direction = 'up'
+            elif event.key == pygame.K_DOWN and game_object.direction != 'up':
+                game_object.direction = 'down'
+            elif event.key == pygame.K_LEFT and game_object.direction != 'right':
+                game_object.direction = 'left'
+            elif event.key == pygame.K_RIGHT and game_object.direction != 'left':
+                game_object.direction = 'right'
+            else:
+                pass
 
 
 main()
