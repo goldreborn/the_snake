@@ -18,6 +18,7 @@ APPLE_COLOR = (255, 0, 0)
 BG_COLOR = (0, 0, 0)
 SPEED = 10
 
+# Создаем класс гейм обджект 
 
 class GameObject:
 
