@@ -1,5 +1,5 @@
 
-from random import randint, choice
+from random import randint
 
 import pygame
 
@@ -24,19 +24,21 @@ pygame.display.set_caption('Змейка')
 
 clock = pygame.time.Clock()
 
-""" Создаем класс GameObject"""
 
 
 class GameObject:
+
+    """ Создаем класс GameObject"""
 
     def __init__(self, position, body_color):
         self.position = position
         self.body_color = body_color
 
-    """ создаём случайные координаты """
 
     @staticmethod
     def random_axis(cell_size):
+
+        """ создаём случайные координаты """
 
         x = randint(0, cell_size) * cell_size
         y = randint(0, cell_size) * cell_size
@@ -44,19 +46,20 @@ class GameObject:
         return x, y
 
 
-""" Создаем класс Snake """
-
 
 class Snake(GameObject):
+
+    """ Создаем класс Snake """
 
     direction = 'right'
 
     def __init__(self, position, body_color):
         super().__init__(position, body_color)
 
-    """ Функция движения змейки """
 
     def move(self):
+
+        """ Функция движения змейки """
 
         global direction
 
@@ -90,17 +93,18 @@ class Snake(GameObject):
             self.position.insert(0, (self.position[0][0], SCREEN_HEIGHT))
 
 
-""" Создаем класс Apple"""
-
 
 class Apple(GameObject):
+
+    """ Создаем класс Apple"""
 
     def __init__(self, position, body_color):
         super().__init__(position, body_color)
 
-    """ Определяем случайное место для яблока"""
 
     def randomize_position(self):
+
+        """ Определяем случайное место для яблока"""
 
         x, y = Snake.random_axis(CELL_SIZE)
 
@@ -114,10 +118,15 @@ field.fill(BG_COLOR)
 
 
 def draw(field, color, axis):
+
+    """ Рисуем объекты """
+
     pygame.draw.rect(field, color, pygame.Rect(axis))
 
 
 def main():
+
+    """ Main """
 
     snake = Snake([(FIELD_CENTER['x'], FIELD_CENTER['y'])], SNAKE_COLOR)
 
@@ -174,20 +183,22 @@ def main():
         pygame.display.update()
 
 
-def handle_keys(game_object):
+def handle_keys(object):
+
+    """Нажатия кнопок"""
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP and game_object.direction != 'down':
-                game_object.direction = 'up'
-            elif event.key == pygame.K_DOWN and game_object.direction != 'up':
-                game_object.direction = 'down'
-            elif event.key == pygame.K_LEFT and game_object.direction != 'right':
-                game_object.direction = 'left'
-            elif event.key == pygame.K_RIGHT and game_object.direction != 'left':
-                game_object.direction = 'right'
+            if event.key == pygame.K_UP and object.direction != 'down':
+                object.direction = 'up'
+            elif event.key == pygame.K_DOWN and object.direction != 'up':
+                object.direction = 'down'
+            elif event.key == pygame.K_LEFT and object.direction != 'right':
+                object.direction = 'left'
+            elif event.key == pygame.K_RIGHT and object.direction != 'left':
+                object.direction = 'right'
             else:
                 pass
 
