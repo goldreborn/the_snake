@@ -32,7 +32,6 @@ class GameObject:
         self.position = position
         self.body_color = body_color
 
-
     @staticmethod
     def random_axis(cell_size):
         """создаём случайные координаты"""
@@ -50,7 +49,6 @@ class Snake(GameObject):
 
     def __init__(self, position, body_color):
         super().__init__(position, body_color)
-
 
     def move(self):
         """Функция движения змейки"""
@@ -87,13 +85,11 @@ class Snake(GameObject):
             self.position.insert(0, (self.position[0][0], SCREEN_HEIGHT))
 
 
-
 class Apple(GameObject):
     """Создаем класс Apple"""
 
     def __init__(self, position, body_color):
         super().__init__(position, body_color)
-
 
     def randomize_position(self):
         """Определяем случайное место для яблока"""
