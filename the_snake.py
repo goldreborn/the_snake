@@ -25,10 +25,8 @@ pygame.display.set_caption('Змейка')
 clock = pygame.time.Clock()
 
 
-
 class GameObject:
-
-    """ Создаем класс GameObject"""
+    """Создаем класс GameObject"""
 
     def __init__(self, position, body_color):
         self.position = position
@@ -37,8 +35,7 @@ class GameObject:
 
     @staticmethod
     def random_axis(cell_size):
-
-        """ создаём случайные координаты """
+        """создаём случайные координаты"""
 
         x = randint(0, cell_size) * cell_size
         y = randint(0, cell_size) * cell_size
@@ -46,10 +43,8 @@ class GameObject:
         return x, y
 
 
-
 class Snake(GameObject):
-
-    """ Создаем класс Snake """
+    """Создаем класс Snake"""
 
     direction = 'right'
 
@@ -58,8 +53,7 @@ class Snake(GameObject):
 
 
     def move(self):
-
-        """ Функция движения змейки """
+        """Функция движения змейки"""
 
         global direction
 
@@ -95,16 +89,14 @@ class Snake(GameObject):
 
 
 class Apple(GameObject):
-
-    """ Создаем класс Apple"""
+    """Создаем класс Apple"""
 
     def __init__(self, position, body_color):
         super().__init__(position, body_color)
 
 
     def randomize_position(self):
-
-        """ Определяем случайное место для яблока"""
+        """Определяем случайное место для яблока"""
 
         x, y = Snake.random_axis(CELL_SIZE)
 
@@ -118,15 +110,13 @@ field.fill(BG_COLOR)
 
 
 def draw(field, color, axis):
-
-    """ Рисуем объекты """
+    """Рисуем объекты"""
 
     pygame.draw.rect(field, color, pygame.Rect(axis))
 
 
 def main():
-
-    """ Main """
+    """Main"""
 
     snake = Snake([(FIELD_CENTER['x'], FIELD_CENTER['y'])], SNAKE_COLOR)
 
@@ -184,7 +174,6 @@ def main():
 
 
 def handle_keys(object):
-
     """Нажатия кнопок"""
 
     for event in pygame.event.get():
