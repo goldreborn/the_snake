@@ -27,6 +27,7 @@ clock = pygame.time.Clock()
 
 class GameObject:
     """Создаем класс GameObject"""
+
     def __init__(self, position, body_color):
         self.position = position
         self.body_color = body_color
@@ -42,6 +43,7 @@ class GameObject:
 
 class Snake(GameObject):
     """Создаем класс Snake"""
+
     direction = 'right'
 
     def __init__(self, position, body_color):
@@ -83,12 +85,12 @@ class Snake(GameObject):
 
 class Apple(GameObject):
     """Создаем класс Apple"""
+
     def __init__(self, position, body_color):
         super().__init__(position, body_color)
 
     def randomize_position(self):
         """Определяем случайное место для яблока"""
-
         x, y = Snake.random_axis(CELL_SIZE)
 
         self.position.insert(0, (x, y,
