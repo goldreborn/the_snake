@@ -18,14 +18,14 @@ DOWN = 0
 LEFT = 0
 RIGHT = 0
 
-screen_CENTER = {
+FIELD_CENTER = {
     'x': SCREEN_WIDTH / 2 - CELL_SIZE,
     'y': SCREEN_HEIGHT / 2 - CELL_SIZE
 }
 SNAKE_COLOR = (0, 255, 0)
 APPLE_COLOR = (255, 0, 0)
 BOARD_BACKGROUND_COLOR = (0, 0, 0)
-SPEED = 25
+SPEED = 10
 
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -62,25 +62,28 @@ class Snake(GameObject):
         """Функция движения змейки"""
         global direction
 
-        if self.direction == 'left':
+        def update_direction():
+            """Update"""
+            if self.direction == 'left':
+                self.position.insert(0,
+                                     (self.position[0][0] - CELL_SIZE,
+                                      self.position[0][1]))
+            elif self.direction == 'right':
+                self.position.insert(0,
+                                     (self.position[0][0] + CELL_SIZE,
+                                      self.position[0][1]))
+            elif self.direction == 'down':
+                self.position.insert(0,
+                                     (self.position[0][0],
+                                      self.position[0][1] + CELL_SIZE))
+            elif self.direction == 'up':
+                self.position.insert(0,
+                                     (self.position[0][0],
+                                      self.position[0][1] - CELL_SIZE))
+            else:
+                pass
 
-            self.position.insert(0,
-                                 (self.position[0][0] - CELL_SIZE,
-                                  self.position[0][1]))
-        elif self.direction == 'right':
-            self.position.insert(0,
-                                 (self.position[0][0] + CELL_SIZE,
-                                  self.position[0][1]))
-        elif self.direction == 'down':
-            self.position.insert(0,
-                                 (self.position[0][0],
-                                  self.position[0][1] + CELL_SIZE))
-        elif self.direction == 'up':
-            self.position.insert(0,
-                                 (self.position[0][0],
-                                  self.position[0][1] - CELL_SIZE))
-        else:
-            pass
+        update_direction()
 
         if self.position[0][0] > SCREEN_WIDTH:
             self.position.insert(0, (0, self.position[0][1]))
@@ -112,17 +115,14 @@ class Apple(GameObject):
         self.position.insert(0, (x, y,
                                  CELL_SIZE, CELL_SIZE))
 
+
 screen.fill(BOARD_BACKGROUND_COLOR)
 
-def update_direction():
-    pass
-
-def get_head_position():
-    pass
 
 def draw(screen, color, axis):
     """Рисуем объекты"""
     pygame.draw.rect(screen, color, pygame.Rect(axis))
+
 
 def draw_grid():
     """Рисуем сетку"""
@@ -134,13 +134,14 @@ def draw_grid():
 
             pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, Line, 1)
 
+
 def main():
     """Main"""
-    snake = Snake([(screen_CENTER['x'], screen_CENTER['y'])], SNAKE_COLOR)
+    snake = Snake([(FIELD_CENTER['x'], FIELD_CENTER['y'])], SNAKE_COLOR)
 
     apple_x, apple_y = GameObject.random_axis(CELL_SIZE)
     apple = Apple([(apple_x, apple_y)], APPLE_COLOR)
-    
+
     while True:
 
         clock.tick(SPEED)
@@ -152,9 +153,9 @@ def main():
         for x_axis, y_axis in snake.position:
 
             draw(screen, snake. body_color, [x_axis,
-                                            y_axis,
-                                            CELL_SIZE,
-                                            CELL_SIZE])
+                                             y_axis,
+                                             CELL_SIZE,
+                                             CELL_SIZE])
 
         one = True if apple.position[0][0] == snake.position[0][0] else False
         two = True if apple.position[0][1] == snake.position[0][1] else False
@@ -162,9 +163,9 @@ def main():
 
         if apple_is_eaten is not True:
             draw(screen, BOARD_BACKGROUND_COLOR, [snake.position[-1][0],
-                                   snake.position[-1][1],
-                                   CELL_SIZE,
-                                   CELL_SIZE])
+                                                  snake.position[-1][1],
+                                                  CELL_SIZE,
+                                                  CELL_SIZE])
 
             snake.position.pop()
 
@@ -172,28 +173,30 @@ def main():
             apple.randomize_position()
 
         draw(screen, apple. body_color, [apple.position[0][0],
-                                        apple.position[0][1],
-                                        CELL_SIZE,
-                                        CELL_SIZE])
+                                         apple.position[0][1],
+                                         CELL_SIZE,
+                                         CELL_SIZE])
 
         if snake.position.count(snake.position[0]) > 1:
 
             reset(snake)
-        
+
         draw_grid()
 
         pygame.display.update()
 
+
 def reset(snake):
     """ресет"""
-    snake.position.insert(-1, (screen_CENTER['x'],
-                                screen_CENTER['y']))
+    snake.position.insert(-1, (FIELD_CENTER['x'],
+                               FIELD_CENTER['y']))
 
     for x, y in snake.position:
 
         draw(screen, BOARD_BACKGROUND_COLOR, [x, y, CELL_SIZE, CELL_SIZE])
-    
+
     del snake.position[1:]
+
 
 def handle_keys(object):
     """Нажатия кнопок"""
