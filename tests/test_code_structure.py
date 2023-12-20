@@ -1,210 +1,135 @@
-
-from random import randint
-
 import pygame
+import pytest
+
+import the_snake
 
 
-pygame.init()
-
-CELL_SIZE = 20
-
-SCREEN_WIDTH = 640
-SCREEN_HEIGHT = 480
-GRID_HEIGHT = 0
-GRID_WIDTH = 0
-GRID_SIZE = 0
-UP = 0
-DOWN = 0
-LEFT = 0
-RIGHT = 0
-
-screen_CENTER = {
-    'x': SCREEN_WIDTH / 2 - CELL_SIZE,
-    'y': SCREEN_HEIGHT / 2 - CELL_SIZE
-}
-SNAKE_COLOR = (0, 255, 0)
-APPLE_COLOR = (255, 0, 0)
-BOARD_BACKGROUND_COLOR = (0, 0, 0)
-SPEED = 10
+EXPECTED_GAME_OBJECT_ATTRS = (
+    ('атрибут', 'position'),
+    ('атрибут', 'body_color'),
+    ('метод', 'draw'),
+)
 
 
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption('Змейка')
-
-clock = pygame.time.Clock()
-
-
-class GameObject:
-    """Создаем класс GameObject"""
-
-    def __init__(self, position, body_color):
-        self.position = position
-        self.body_color = body_color
-
-    @staticmethod
-    def random_axis(cell_size):
-        """создаём случайные координаты"""
-        x = randint(0, cell_size) * cell_size
-        y = randint(0, cell_size) * cell_size
-
-        return x, y
+@pytest.mark.parametrize(
+    'attr_type, attr_name',
+    EXPECTED_GAME_OBJECT_ATTRS,
+    ids=[elem[1] for elem in EXPECTED_GAME_OBJECT_ATTRS]
+)
+def test_game_object_attributes(game_object, attr_type, attr_name):
+    assert hasattr(game_object, attr_name), (
+        f'Убедитесь, что у объектов класса `GameObject` определен {attr_type} '
+        f'`{attr_name}`.'
+    )
 
 
-class Snake(GameObject):
-    """Создаем класс Snake"""
-
-    direction = 'right'
-
-    def __init__(self, position, body_color):
-        super().__init__(position, body_color)
-
-    def move(self):
-        """Функция движения змейки"""
-        global direction
-
-        if self.direction == 'left':
-
-            self.position.insert(0,
-                                 (self.position[0][0] - CELL_SIZE,
-                                  self.position[0][1]))
-        elif self.direction == 'right':
-            self.position.insert(0,
-                                 (self.position[0][0] + CELL_SIZE,
-                                  self.position[0][1]))
-        elif self.direction == 'down':
-            self.position.insert(0,
-                                 (self.position[0][0],
-                                  self.position[0][1] + CELL_SIZE))
-        elif self.direction == 'up':
-            self.position.insert(0,
-                                 (self.position[0][0],
-                                  self.position[0][1] - CELL_SIZE))
-        else:
-            pass
-
-        if self.position[0][0] > SCREEN_WIDTH:
-            self.position.insert(0, (0, self.position[0][1]))
-        elif self.position[0][0] < 0:
-            self.position.insert(0, (SCREEN_WIDTH, self.position[0][1]))
-        elif self.position[0][1] > SCREEN_HEIGHT:
-            self.position.insert(0, (self.position[0][0], 0))
-        elif self.position[0][1] < 0:
-            self.position.insert(0, (self.position[0][0], SCREEN_HEIGHT))
+EXPECTED_APPLE_ATTRS = (
+    ('атрибут', 'position'),
+    ('атрибут', 'body_color'),
+    ('метод', 'draw'),
+    ('метод', 'randomize_position'),
+)
 
 
-class Apple(GameObject):
-    """Создаем класс Apple"""
-
-    def __init__(self, position, body_color):
-        super().__init__(position, body_color)
-
-    def randomize_position(self):
-        """Определяем случайное место для яблока"""
-        x, y = Snake.random_axis(CELL_SIZE)
-
-        self.position.insert(0, (x, y,
-                                 CELL_SIZE, CELL_SIZE))
-
-        print('apple has been eaten')
+def test_apple_inherits_from_game_object():
+    assert issubclass(the_snake.Apple, the_snake.GameObject), (
+        'Класс `Apple` должен наследоваться от класса `GameObject`.'
+    )
 
 
-screen.fill(BOARD_BACKGROUND_COLOR)
+@pytest.mark.parametrize(
+    'attr_type, attr_name',
+    EXPECTED_APPLE_ATTRS,
+    ids=[elem[1] for elem in EXPECTED_APPLE_ATTRS]
+)
+def test_apple_attributes(apple, attr_type, attr_name):
+    assert hasattr(apple, attr_name), (
+        f'Убедитесь, что у объектов класса `Apple` определен {attr_type} '
+        f'`{attr_name}`.'
+    )
 
 
-def draw(screen, color, axis):
-    """Рисуем объекты"""
-    pygame.draw.rect(screen, color, pygame.Rect(axis))
-
-def draw_grid():
-    """Рисуем сетку"""
-    for x in range(0, SCREEN_WIDTH, CELL_SIZE):
-
-        for y in range(0, SCREEN_HEIGHT, CELL_SIZE):
-
-            Line = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
-
-            pygame.draw.rect(screen, (255,255,255), Line, 1)
-
-def main():
-    """Main"""
-    snake = Snake([(screen_CENTER['x'], screen_CENTER['y'])], SNAKE_COLOR)
-
-    apple_x, apple_y = GameObject.random_axis(CELL_SIZE)
-    apple = Apple([(apple_x, apple_y)], APPLE_COLOR)
-
-    while True:
-
-        clock.tick(SPEED)
-
-        draw_grid()
-
-        handle_keys(snake)
-
-        snake.move()
-
-        for x_axis, y_axis in snake.position:
-
-            draw(screen, snake. body_color, [x_axis,
-                                            y_axis,
-                                            CELL_SIZE,
-                                            CELL_SIZE])
-
-        one = True if apple.position[0][0] == snake.position[0][0] else False
-        two = True if apple.position[0][1] == snake.position[0][1] else False
-        apple_is_eaten = True if one and two else False
-
-        if apple_is_eaten is not True:
-            draw(screen, BOARD_BACKGROUND_COLOR, [snake.position[-1][0],
-                                   snake.position[-1][1],
-                                   CELL_SIZE,
-                                   CELL_SIZE])
-
-            snake.position.pop()
-
-        if apple_is_eaten:
-            apple.randomize_position()
-
-        draw(screen, apple. body_color, [apple.position[0][0],
-                                        apple.position[0][1],
-                                        CELL_SIZE,
-                                        CELL_SIZE])
-
-        reset(snake)
-
-        pygame.display.update()
-
-def reset(snake):
-    """ресет"""
-    if snake.position.count(snake.position[0]) > 1:
-
-        snake.position.insert(-1, (screen_CENTER['x'],
-                                    screen_CENTER['y']))
-
-        for x, y in snake.position:
-
-            draw(screen, BOARD_BACKGROUND_COLOR, [x, y, CELL_SIZE, CELL_SIZE])
-
-            del snake.position[1:]
-
-def handle_keys(object):
-    """Нажатия кнопок"""
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP and object.direction != 'down':
-                object.direction = 'up'
-            elif event.key == pygame.K_DOWN and object.direction != 'up':
-                object.direction = 'down'
-            elif event.key == pygame.K_LEFT and object.direction != 'right':
-                object.direction = 'left'
-            elif event.key == pygame.K_RIGHT and object.direction != 'left':
-                object.direction = 'right'
-            else:
-                pass
+EXPECTED_SNAKE_ATTRS = (
+    ('атрибут', 'position'),
+    ('атрибут', 'body_color'),
+    ('атрибут', 'length'),
+    ('атрибут', 'positions'),
+    ('атрибут', 'direction'),
+    ('метод', 'draw'),
+    ('метод', 'get_head_position'),
+    ('метод', 'move'),
+    ('метод', 'reset'),
+    ('метод', 'update_direction'),
+)
 
 
-main()
+def test_snake_inherits_from_game_object():
+    assert issubclass(the_snake.Snake, the_snake.GameObject), (
+        'Класс `Snake` должен наследоваться от класса `GameObject`.'
+    )
 
-if __name__ == '__main__':
-    main()
+
+@pytest.mark.parametrize(
+    'attr_type, attr_name',
+    EXPECTED_SNAKE_ATTRS,
+    ids=[elem[1] for elem in EXPECTED_SNAKE_ATTRS]
+)
+def test_snake_attributes(snake, attr_type, attr_name):
+    assert hasattr(snake, attr_name), (
+        f'Убедитесь, что у объектов класса `Snake` определен {attr_type} '
+        f'`{attr_name}`.'
+    )
+
+
+EXPECTED_MODULE_ELEMENTS = (
+    ('константа', 'SCREEN_WIDTH'),
+    ('константа', 'SCREEN_HEIGHT'),
+    ('константа', 'GRID_SIZE'),
+    ('константа', 'GRID_WIDTH'),
+    ('константа', 'GRID_HEIGHT'),
+    ('константа', 'BOARD_BACKGROUND_COLOR'),
+    ('константа', 'UP'),
+    ('константа', 'DOWN'),
+    ('константа', 'LEFT'),
+    ('константа', 'RIGHT'),
+    ('переменная', 'screen'),
+    ('переменная', 'clock'),
+    ('функция', 'main'),
+    ('функция', 'handle_keys'),
+)
+
+
+@pytest.mark.parametrize(
+    'element_type, element_name',
+    EXPECTED_MODULE_ELEMENTS,
+    ids=[elem[1] for elem in EXPECTED_MODULE_ELEMENTS]
+)
+def test_elements_exist(element_type, element_name):
+    assert hasattr(the_snake, element_name), (
+        f'Убедитесь, что в модуле `the_snake` определена {element_type} '
+        f'`{element_name}`.'
+    )
+
+
+@pytest.mark.parametrize(
+    'expected_type, var_name',
+    (
+        (pygame.Surface, 'screen'),
+        (pygame.time.Clock, 'clock'),
+    ),
+)
+def test_vars_type(expected_type, var_name):
+    assert isinstance(getattr(the_snake, var_name, None), expected_type), (
+        'Убедитесь, что в модуле `the_snake` есть переменная '
+        f'`{var_name}` типа `{expected_type.__name__}`.'
+    )
+
+
+@pytest.mark.parametrize(
+    'func_name',
+    ('handle_keys', 'main'),
+)
+def test_vars_are_functions(func_name):
+    assert callable(getattr(the_snake, func_name, None)), (
+        f'Убедитесь, что переменная `{func_name}` является функцией.'
+    )
