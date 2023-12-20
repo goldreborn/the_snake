@@ -27,7 +27,6 @@ clock = pygame.time.Clock()
 
 class GameObject:
     """Создаем класс GameObject"""
-
     def __init__(self, position, body_color):
         self.position = position
         self.body_color = body_color
@@ -35,7 +34,6 @@ class GameObject:
     @staticmethod
     def random_axis(cell_size):
         """создаём случайные координаты"""
-
         x = randint(0, cell_size) * cell_size
         y = randint(0, cell_size) * cell_size
 
@@ -44,7 +42,6 @@ class GameObject:
 
 class Snake(GameObject):
     """Создаем класс Snake"""
-
     direction = 'right'
 
     def __init__(self, position, body_color):
@@ -52,7 +49,6 @@ class Snake(GameObject):
 
     def move(self):
         """Функция движения змейки"""
-
         global direction
 
         if self.direction == 'left':
@@ -87,7 +83,6 @@ class Snake(GameObject):
 
 class Apple(GameObject):
     """Создаем класс Apple"""
-
     def __init__(self, position, body_color):
         super().__init__(position, body_color)
 
@@ -107,13 +102,11 @@ field.fill(BG_COLOR)
 
 def draw(field, color, axis):
     """Рисуем объекты"""
-
     pygame.draw.rect(field, color, pygame.Rect(axis))
 
 
 def main():
     """Main"""
-
     snake = Snake([(FIELD_CENTER['x'], FIELD_CENTER['y'])], SNAKE_COLOR)
 
     apple_x, apple_y = GameObject.random_axis(CELL_SIZE)
@@ -171,7 +164,6 @@ def main():
 
 def handle_keys(object):
     """Нажатия кнопок"""
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
