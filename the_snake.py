@@ -58,33 +58,29 @@ class Snake(GameObject):
         super().__init__(position, body_color)
         self.head = self.position[0]
 
-    def move(self):
-        """Функция движения змейки"""
-        global direction
+    def update_direction(self):
+        """Update"""
+        if self.direction == LEFT:
+            self.position.insert(0,
+                                 (self.position[0][0] - CELL_SIZE,
+                                  self.position[0][1]))
+        elif self.direction == RIGHT:
+            self.position.insert(0,
+                                 (self.position[0][0] + CELL_SIZE,
+                                  self.position[0][1]))
+        elif self.direction == DOWN:
+            self.position.insert(0,
+                                 (self.position[0][0],
+                                  self.position[0][1] + CELL_SIZE))
+        elif self.direction == UP:
+            self.position.insert(0,
+                                 (self.position[0][0],
+                                  self.position[0][1] - CELL_SIZE))
+        else:
+            pass
 
-        def update_direction():
-            """Update"""
-            if self.direction == LEFT:
-                self.position.insert(0,
-                                     (self.position[0][0] - CELL_SIZE,
-                                      self.position[0][1]))
-            elif self.direction == RIGHT:
-                self.position.insert(0,
-                                     (self.position[0][0] + CELL_SIZE,
-                                      self.position[0][1]))
-            elif self.direction == DOWN:
-                self.position.insert(0,
-                                     (self.position[0][0],
-                                      self.position[0][1] + CELL_SIZE))
-            elif self.direction == UP:
-                self.position.insert(0,
-                                     (self.position[0][0],
-                                      self.position[0][1] - CELL_SIZE))
-            else:
-                pass
-
-        update_direction()
-
+    def if_out_of_bounds(self):
+        """если вне игрового поля"""
         if self.position[0][0] > SCREEN_WIDTH:
 
             self.position.insert(0, (0, self.position[0][1]))
@@ -104,6 +100,12 @@ class Snake(GameObject):
 
             self.position.insert(0, (self.position[0][0], SCREEN_HEIGHT))
             self.position.pop(1)
+
+    def move(self):
+        """Функция движения змейки"""
+
+        self.update_direction()
+        self.if_out_of_bounds()
 
 
 class Apple(GameObject):
