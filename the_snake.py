@@ -40,6 +40,7 @@ class GameObject:
     def __init__(self, position, body_color):
         self.position = position
         self.body_color = body_color
+    
 
     @staticmethod
     def random_axis(cell_size):
@@ -86,18 +87,22 @@ class Snake(GameObject):
         update_direction()
 
         if self.position[0][0] > SCREEN_WIDTH:
+
             self.position.insert(0, (0, self.position[0][1]))
             self.position.pop(1)
 
         elif self.position[0][0] < 0:
+
             self.position.insert(0, (SCREEN_WIDTH, self.position[0][1]))
             self.position.pop(1)
 
         elif self.position[0][1] > SCREEN_HEIGHT:
+
             self.position.insert(0, (self.position[0][0], 0))
             self.position.pop(1)
 
         elif self.position[0][1] < 0:
+
             self.position.insert(0, (self.position[0][0], SCREEN_HEIGHT))
             self.position.pop(1)
 
@@ -117,6 +122,11 @@ class Apple(GameObject):
 
 
 screen.fill(BOARD_BACKGROUND_COLOR)
+
+
+def get_head_position():
+    """-"""
+    pass
 
 
 def draw(screen, color, axis):
@@ -152,16 +162,17 @@ def main():
 
         for x_axis, y_axis in snake.position:
 
-            draw(screen, snake. body_color, [x_axis,
-                                             y_axis,
-                                             CELL_SIZE,
-                                             CELL_SIZE])
+            draw(screen, snake.body_color, [x_axis,
+                                            y_axis,
+                                            CELL_SIZE,
+                                            CELL_SIZE])
 
         one = True if apple.position[0][0] == snake.position[0][0] else False
         two = True if apple.position[0][1] == snake.position[0][1] else False
         apple_is_eaten = True if one and two else False
 
         if apple_is_eaten is not True:
+            
             draw(screen, BOARD_BACKGROUND_COLOR, [snake.position[-1][0],
                                                   snake.position[-1][1],
                                                   CELL_SIZE,
@@ -172,7 +183,7 @@ def main():
         if apple_is_eaten:
             apple.randomize_position()
 
-        draw(screen, apple. body_color, [apple.position[0][0],
+        draw(screen, apple.body_color, [apple.position[0][0],
                                          apple.position[0][1],
                                          CELL_SIZE,
                                          CELL_SIZE])
@@ -195,7 +206,7 @@ def reset(snake):
 
         draw(screen, BOARD_BACKGROUND_COLOR, [x, y, CELL_SIZE, CELL_SIZE])
 
-    del snake.position[1:]
+    del snake.position[:-1]
 
 
 def handle_keys(object):
