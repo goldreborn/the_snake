@@ -40,7 +40,6 @@ class GameObject:
     def __init__(self, position, body_color):
         self.position = position
         self.body_color = body_color
-    
 
     @staticmethod
     def random_axis(cell_size):
@@ -172,7 +171,7 @@ def main():
         apple_is_eaten = True if one and two else False
 
         if apple_is_eaten is not True:
-            
+
             draw(screen, BOARD_BACKGROUND_COLOR, [snake.position[-1][0],
                                                   snake.position[-1][1],
                                                   CELL_SIZE,
@@ -184,9 +183,9 @@ def main():
             apple.randomize_position()
 
         draw(screen, apple.body_color, [apple.position[0][0],
-                                         apple.position[0][1],
-                                         CELL_SIZE,
-                                         CELL_SIZE])
+                                        apple.position[0][1],
+                                        CELL_SIZE,
+                                        CELL_SIZE])
 
         if snake.position.count(snake.position[0]) > 1:
 
