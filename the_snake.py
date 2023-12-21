@@ -179,7 +179,7 @@ def main():
 
             snake.position.pop()
         else:
-            
+
             apple.randomize_position()
 
         draw(screen, apple.body_color, [apple.position[0][0],
