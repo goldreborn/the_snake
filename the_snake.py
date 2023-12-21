@@ -10,14 +10,13 @@ CELL_SIZE = 20
 
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
-GRID_HEIGHT = 0
-GRID_WIDTH = 0
-GRID_SIZE = 0
-UP = 0
-DOWN = 0
-LEFT = 0
-RIGHT = 0
-
+GRID_HEIGHT = SCREEN_HEIGHT
+GRID_WIDTH = SCREEN_WIDTH
+GRID_SIZE = CELL_SIZE
+UP = 'up'
+DOWN = 'down'
+LEFT = 'left'
+RIGHT = 'right'
 FIELD_CENTER = {
     'x': SCREEN_WIDTH / 2 - CELL_SIZE,
     'y': SCREEN_HEIGHT / 2 - CELL_SIZE
@@ -53,7 +52,7 @@ class GameObject:
 class Snake(GameObject):
     """Создаем класс Snake"""
 
-    direction = 'right'
+    direction = RIGHT
 
     def __init__(self, position, body_color):
         super().__init__(position, body_color)
@@ -64,19 +63,19 @@ class Snake(GameObject):
 
         def update_direction():
             """Update"""
-            if self.direction == 'left':
+            if self.direction == LEFT:
                 self.position.insert(0,
                                      (self.position[0][0] - CELL_SIZE,
                                       self.position[0][1]))
-            elif self.direction == 'right':
+            elif self.direction == RIGHT:
                 self.position.insert(0,
                                      (self.position[0][0] + CELL_SIZE,
                                       self.position[0][1]))
-            elif self.direction == 'down':
+            elif self.direction == DOWN:
                 self.position.insert(0,
                                      (self.position[0][0],
                                       self.position[0][1] + CELL_SIZE))
-            elif self.direction == 'up':
+            elif self.direction == UP:
                 self.position.insert(0,
                                      (self.position[0][0],
                                       self.position[0][1] - CELL_SIZE))
@@ -123,9 +122,9 @@ class Apple(GameObject):
 screen.fill(BOARD_BACKGROUND_COLOR)
 
 
-def get_head_position():
+def get_head_position(snake):
     """-"""
-    pass
+    return snake.position[0]
 
 
 def draw(screen, color, axis):
@@ -135,11 +134,11 @@ def draw(screen, color, axis):
 
 def draw_grid():
     """Рисуем сетку"""
-    for x in range(0, SCREEN_WIDTH, CELL_SIZE):
+    for x in range(0, GRID_WIDTH, GRID_SIZE):
 
-        for y in range(0, SCREEN_HEIGHT, CELL_SIZE):
+        for y in range(0, GRID_HEIGHT, GRID_SIZE):
 
-            Line = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
+            Line = pygame.Rect(x, y, GRID_SIZE, GRID_SIZE)
 
             pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, Line, 1)
 
@@ -198,14 +197,14 @@ def main():
 
 def reset(snake):
     """ресет"""
-    snake.position.insert(-1, (FIELD_CENTER['x'],
+    snake.position.insert(1, (FIELD_CENTER['x'],
                                FIELD_CENTER['y']))
 
     for x, y in snake.position:
 
         draw(screen, BOARD_BACKGROUND_COLOR, [x, y, CELL_SIZE, CELL_SIZE])
 
-    del snake.position[:-1]
+    del snake.position[1:]
 
 
 def handle_keys(object):
