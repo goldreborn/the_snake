@@ -197,14 +197,15 @@ def main():
 
 def reset(snake):
     """ресет"""
-    snake.position.insert(1, (FIELD_CENTER['x'],
-                               FIELD_CENTER['y']))
+    snake.position.insert(-1,
+                          (FIELD_CENTER['x'],
+                           FIELD_CENTER['y']))
 
     for x, y in snake.position:
 
         draw(screen, BOARD_BACKGROUND_COLOR, [x, y, CELL_SIZE, CELL_SIZE])
 
-    del snake.position[1:]
+    del snake.position[:-1]
 
 
 def handle_keys(object):
