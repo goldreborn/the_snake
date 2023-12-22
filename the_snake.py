@@ -103,7 +103,6 @@ class Snake(GameObject):
 
     def move(self):
         """Функция движения змейки"""
-
         self.update_direction()
         self.if_out_of_bounds()
 
