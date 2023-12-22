@@ -36,8 +36,9 @@ clock = pygame.time.Clock()
 class GameObject:
     """Создаем класс GameObject"""
 
-    def __init__(self: object, position: list, body_color: tuple) -> None:
-        self.position = position
+    def __init__(self: object, positions=None, body_color=None) -> None:
+        self.positions = positions
+        self.position = None
         self.body_color = body_color
 
     @staticmethod
@@ -47,75 +48,83 @@ class GameObject:
         y = randint(0, grid_size) * grid_size
 
         return x, y
-
+    
+    @staticmethod
+    def draw(screen: pygame.display, color: tuple, axis: list) -> None:
+        """Рисуем объекты"""
+        pygame.draw.rect(screen, color, pygame.Rect(axis))
 
 class Snake(GameObject):
     """Создаем класс Snake"""
 
     direction = RIGHT
 
-    def __init__(self, position, body_color=SNAKE_COLOR):
-        super().__init__(position, body_color)
-        self.head = self.position[0]
+    def __init__(self, positions=None, body_color=SNAKE_COLOR):
+        super().__init__(positions, body_color)
+        self.positions = positions
+        self.position = None
+        self.length = None
+        self.body_color = body_color
 
-    def get_head_position(self) -> tuple:
+    def get_head_position(self):
         """-"""
-        return self.position[0]
+        pass
 
     def update_direction(self) -> None:
         """Update"""
         if self.direction == LEFT:
-            self.position.insert(0,
-                                 (self.position[0][0] - GRID_SIZE,
-                                  self.position[0][1]))
+            self.positions.insert(0,
+                                  (self.positions[0][0] - GRID_SIZE,
+                                   self.positions[0][1]))
         elif self.direction == RIGHT:
-            self.position.insert(0,
-                                 (self.position[0][0] + GRID_SIZE,
-                                  self.position[0][1]))
+            self.positions.insert(0,
+                                  (self.positions[0][0] + GRID_SIZE,
+                                   self.positions[0][1]))
         elif self.direction == DOWN:
-            self.position.insert(0,
-                                 (self.position[0][0],
-                                  self.position[0][1] + GRID_SIZE))
+            self.positions.insert(0,
+                                  (self.positions[0][0],
+                                   self.positions[0][1] + GRID_SIZE))
         elif self.direction == UP:
-            self.position.insert(0,
-                                 (self.position[0][0],
-                                  self.position[0][1] - GRID_SIZE))
+            self.positions.insert(0,
+                                  (self.positions[0][0],
+                                   self.positions[0][1] - GRID_SIZE))
         else:
             pass
 
     def if_out_of_bounds(self) -> None:
         """если вне игрового поля"""
-        if self.position[0][0] > SCREEN_WIDTH:
+        if self.positions[0][0] > SCREEN_WIDTH:
 
-            self.position.insert(0, (0, self.position[0][1]))
-            self.position.pop(1)
+            self.positions.insert(0, (0, self.positions[0][1]))
+            self.positions.pop(1)
 
-        elif self.position[0][0] < 0:
+        elif self.positions[0][0] < 0:
 
-            self.position.insert(0, (SCREEN_WIDTH, self.position[0][1]))
-            self.position.pop(1)
+            self.positions.insert(0, (SCREEN_WIDTH, self.positions[0][1]))
+            self.positions.pop(1)
 
-        elif self.position[0][1] > SCREEN_HEIGHT:
+        elif self.positions[0][1] > SCREEN_HEIGHT:
 
-            self.position.insert(0, (self.position[0][0], 0))
-            self.position.pop(1)
+            self.positions.insert(0, (self.positions[0][0], 0))
+            self.positions.pop(1)
 
-        elif self.position[0][1] < 0:
+        elif self.positions[0][1] < 0:
 
-            self.position.insert(0, (self.position[0][0], SCREEN_HEIGHT))
-            self.position.pop(1)
+            self.positions.insert(0, (self.positions[0][0], SCREEN_HEIGHT))
+            self.positions.pop(1)
 
     def reset(self) -> None:
         """ресет"""
-        self.position.insert(-1,
-                             (SCREEN_CENTER['x'],
-                              SCREEN_CENTER['y']))
+        self.positions.insert(-1,
+                              (SCREEN_CENTER['x'],
+                               SCREEN_CENTER['y']))
 
-        for x, y in self.position:
+        for x, y in self.positions:
 
-            draw(screen, BOARD_BACKGROUND_COLOR, [x, y, GRID_SIZE, GRID_SIZE])
+            GameObject.draw(screen, BOARD_BACKGROUND_COLOR,
+                            [x, y, GRID_SIZE, GRID_SIZE])
 
-        del self.position[:-1]
+        del self.positions[:-1]
 
     def move(self) -> None:
         """Функция движения змейки"""
@@ -126,20 +135,19 @@ class Snake(GameObject):
 class Apple(GameObject):
     """Создаем класс Apple"""
 
-    def __init__(self, position, body_color=APPLE_COLOR):
-        super().__init__(position, body_color)
+    def __init__(self, positions=None, body_color=APPLE_COLOR):
+        super().__init__(positions, body_color)
+        self.positions = positions
+        self.position = None
+        self.body_color = body_color
 
     def randomize_position(self) -> None:
         """Определяем случайное место для яблока"""
         x, y = Snake.random_axis(GRID_SIZE)
 
-        self.position.insert(0, (x, y,
-                                 GRID_SIZE, GRID_SIZE))
-
-
-def draw(screen: pygame.display, color: tuple, axis: list) -> None:
-    """Рисуем объекты"""
-    pygame.draw.rect(screen, color, pygame.Rect(axis))
+        self.positions.insert(0,
+                              (x, y,
+                               GRID_SIZE, GRID_SIZE))
 
 
 def draw_grid() -> None:
@@ -168,35 +176,36 @@ def main() -> None:
 
         snake.move()
 
-        for x_axis, y_axis in snake.position:
+        for x_axis, y_axis in snake.positions:
 
-            draw(screen, snake.body_color, [x_axis,
-                                            y_axis,
-                                            GRID_SIZE,
-                                            GRID_SIZE])
+            Snake.draw(screen, snake.body_color, [x_axis,
+                                                  y_axis,
+                                                  GRID_SIZE,
+                                                  GRID_SIZE])
 
-        one = True if apple.position[0][0] == snake.position[0][0] else False
-        two = True if apple.position[0][1] == snake.position[0][1] else False
+        one = True if apple.positions[0][0] == snake.positions[0][0] else False
+        two = True if apple.positions[0][1] == snake.positions[0][1] else False
         apple_is_eaten = True if one and two else False
 
         if apple_is_eaten is False:
 
-            draw(screen, BOARD_BACKGROUND_COLOR, [snake.position[-1][0],
-                                                  snake.position[-1][1],
-                                                  GRID_SIZE,
-                                                  GRID_SIZE])
+            GameObject.draw(screen, BOARD_BACKGROUND_COLOR,
+                            [snake.positions[-1][0],
+                             snake.positions[-1][1],
+                             GRID_SIZE,
+                             GRID_SIZE])
 
-            snake.position.pop()
+            snake.positions.pop()
         else:
 
             apple.randomize_position()
 
-        draw(screen, apple.body_color, [apple.position[0][0],
-                                        apple.position[0][1],
-                                        GRID_SIZE,
-                                        GRID_SIZE])
+        Apple.draw(screen, apple.body_color, [apple.positions[0][0],
+                                              apple.positions[0][1],
+                                              GRID_SIZE,
+                                              GRID_SIZE])
 
-        if snake.position.count(snake.position[0]) > 1:
+        if snake.positions.count(snake.positions[0]) > 1:
 
             snake.reset()
 
@@ -222,8 +231,6 @@ def handle_keys(object: Snake) -> None:
             else:
                 pass
 
-
-main()
 
 if __name__ == '__main__':
     main()
