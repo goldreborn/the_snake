@@ -48,11 +48,12 @@ class GameObject:
         y = randint(0, grid_size) * grid_size
 
         return x, y
-    
+
     @staticmethod
     def draw(screen: pygame.display, color: tuple, axis: list) -> None:
         """Рисуем объекты"""
         pygame.draw.rect(screen, color, pygame.Rect(axis))
+
 
 class Snake(GameObject):
     """Создаем класс Snake"""
