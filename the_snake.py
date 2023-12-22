@@ -6,20 +6,19 @@ import pygame
 
 pygame.init()
 
-CELL_SIZE = 20
+GRID_SIZE = 20
 
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
 GRID_HEIGHT = SCREEN_HEIGHT
 GRID_WIDTH = SCREEN_WIDTH
-GRID_SIZE = CELL_SIZE
 UP = 'up'
 DOWN = 'down'
 LEFT = 'left'
 RIGHT = 'right'
 SCREEN_CENTER = {
-    'x': SCREEN_WIDTH / 2 - CELL_SIZE,
-    'y': SCREEN_HEIGHT / 2 - CELL_SIZE
+    'x': SCREEN_WIDTH / 2 - GRID_SIZE,
+    'y': SCREEN_HEIGHT / 2 - GRID_SIZE
 }
 SNAKE_COLOR = (0, 255, 0)
 APPLE_COLOR = (255, 0, 0)
@@ -42,10 +41,10 @@ class GameObject:
         self.body_color = body_color
 
     @staticmethod
-    def random_axis(cell_size: int):
+    def random_axis(grid_size: int):
         """создаём случайные координаты"""
-        x = randint(0, cell_size) * cell_size
-        y = randint(0, cell_size) * cell_size
+        x = randint(0, grid_size) * grid_size
+        y = randint(0, grid_size) * grid_size
 
         return x, y
 
@@ -59,28 +58,28 @@ class Snake(GameObject):
         super().__init__(position, body_color)
         self.head = self.position[0]
 
-    def get_head_position(snake: GameObject) -> tuple:
+    def get_head_position(self) -> tuple:
         """-"""
-        return snake.position[0]
+        return self.position[0]
 
     def update_direction(self) -> None:
         """Update"""
         if self.direction == LEFT:
             self.position.insert(0,
-                                 (self.position[0][0] - CELL_SIZE,
+                                 (self.position[0][0] - GRID_SIZE,
                                   self.position[0][1]))
         elif self.direction == RIGHT:
             self.position.insert(0,
-                                 (self.position[0][0] + CELL_SIZE,
+                                 (self.position[0][0] + GRID_SIZE,
                                   self.position[0][1]))
         elif self.direction == DOWN:
             self.position.insert(0,
                                  (self.position[0][0],
-                                  self.position[0][1] + CELL_SIZE))
+                                  self.position[0][1] + GRID_SIZE))
         elif self.direction == UP:
             self.position.insert(0,
                                  (self.position[0][0],
-                                  self.position[0][1] - CELL_SIZE))
+                                  self.position[0][1] - GRID_SIZE))
         else:
             pass
 
@@ -114,7 +113,7 @@ class Snake(GameObject):
 
         for x, y in self.position:
 
-            draw(screen, BOARD_BACKGROUND_COLOR, [x, y, CELL_SIZE, CELL_SIZE])
+            draw(screen, BOARD_BACKGROUND_COLOR, [x, y, GRID_SIZE, GRID_SIZE])
 
         del self.position[:-1]
 
@@ -132,10 +131,10 @@ class Apple(GameObject):
 
     def randomize_position(self) -> None:
         """Определяем случайное место для яблока"""
-        x, y = Snake.random_axis(CELL_SIZE)
+        x, y = Snake.random_axis(GRID_SIZE)
 
         self.position.insert(0, (x, y,
-                                 CELL_SIZE, CELL_SIZE))
+                                 GRID_SIZE, GRID_SIZE))
 
 
 def draw(screen: pygame.display, color: tuple, axis: list) -> None:
@@ -158,7 +157,7 @@ def main() -> None:
     """Main"""
     snake = Snake([(SCREEN_CENTER['x'], SCREEN_CENTER['y'])], SNAKE_COLOR)
 
-    apple_x, apple_y = GameObject.random_axis(CELL_SIZE)
+    apple_x, apple_y = GameObject.random_axis(GRID_SIZE)
     apple = Apple([(apple_x, apple_y)], APPLE_COLOR)
 
     while True:
@@ -173,8 +172,8 @@ def main() -> None:
 
             draw(screen, snake.body_color, [x_axis,
                                             y_axis,
-                                            CELL_SIZE,
-                                            CELL_SIZE])
+                                            GRID_SIZE,
+                                            GRID_SIZE])
 
         one = True if apple.position[0][0] == snake.position[0][0] else False
         two = True if apple.position[0][1] == snake.position[0][1] else False
@@ -184,8 +183,8 @@ def main() -> None:
 
             draw(screen, BOARD_BACKGROUND_COLOR, [snake.position[-1][0],
                                                   snake.position[-1][1],
-                                                  CELL_SIZE,
-                                                  CELL_SIZE])
+                                                  GRID_SIZE,
+                                                  GRID_SIZE])
 
             snake.position.pop()
         else:
@@ -194,8 +193,8 @@ def main() -> None:
 
         draw(screen, apple.body_color, [apple.position[0][0],
                                         apple.position[0][1],
-                                        CELL_SIZE,
-                                        CELL_SIZE])
+                                        GRID_SIZE,
+                                        GRID_SIZE])
 
         if snake.position.count(snake.position[0]) > 1:
 
