@@ -28,6 +28,7 @@ SPEED = 10
 
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen.fill(BOARD_BACKGROUND_COLOR)
 pygame.display.set_caption('Змейка')
 
 clock = pygame.time.Clock()
@@ -36,12 +37,12 @@ clock = pygame.time.Clock()
 class GameObject:
     """Создаем класс GameObject"""
 
-    def __init__(self, position, body_color):
+    def __init__(self: object, position: list, body_color: tuple) -> None:
         self.position = position
         self.body_color = body_color
 
     @staticmethod
-    def random_axis(cell_size):
+    def random_axis(cell_size: int):
         """создаём случайные координаты"""
         x = randint(0, cell_size) * cell_size
         y = randint(0, cell_size) * cell_size
@@ -54,11 +55,11 @@ class Snake(GameObject):
 
     direction = RIGHT
 
-    def __init__(self, position, body_color):
+    def __init__(self, position, body_color=SNAKE_COLOR):
         super().__init__(position, body_color)
         self.head = self.position[0]
 
-    def update_direction(self):
+    def update_direction(self) -> None:
         """Update"""
         if self.direction == LEFT:
             self.position.insert(0,
@@ -79,7 +80,7 @@ class Snake(GameObject):
         else:
             pass
 
-    def if_out_of_bounds(self):
+    def if_out_of_bounds(self) -> None:
         """если вне игрового поля"""
         if self.position[0][0] > SCREEN_WIDTH:
 
@@ -101,7 +102,7 @@ class Snake(GameObject):
             self.position.insert(0, (self.position[0][0], SCREEN_HEIGHT))
             self.position.pop(1)
 
-    def move(self):
+    def move(self) -> None:
         """Функция движения змейки"""
         self.update_direction()
         self.if_out_of_bounds()
@@ -110,10 +111,10 @@ class Snake(GameObject):
 class Apple(GameObject):
     """Создаем класс Apple"""
 
-    def __init__(self, position, body_color):
+    def __init__(self, position, body_color=APPLE_COLOR):
         super().__init__(position, body_color)
 
-    def randomize_position(self):
+    def randomize_position(self) -> None:
         """Определяем случайное место для яблока"""
         x, y = Snake.random_axis(CELL_SIZE)
 
@@ -121,20 +122,17 @@ class Apple(GameObject):
                                  CELL_SIZE, CELL_SIZE))
 
 
-screen.fill(BOARD_BACKGROUND_COLOR)
-
-
-def get_head_position(snake):
+def get_head_position(snake: GameObject) -> tuple:
     """-"""
     return snake.position[0]
 
 
-def draw(screen, color, axis):
+def draw(screen: pygame.display, color: tuple, axis: list) -> None:
     """Рисуем объекты"""
     pygame.draw.rect(screen, color, pygame.Rect(axis))
 
 
-def draw_grid():
+def draw_grid() -> None:
     """Рисуем сетку"""
     for x in range(0, GRID_WIDTH, GRID_SIZE):
 
@@ -145,7 +143,7 @@ def draw_grid():
             pygame.draw.rect(screen, BOARD_BACKGROUND_COLOR, Line, 1)
 
 
-def main():
+def main() -> None:
     """Main"""
     snake = Snake([(SCREEN_CENTER['x'], SCREEN_CENTER['y'])], SNAKE_COLOR)
 
@@ -197,7 +195,7 @@ def main():
         pygame.display.update()
 
 
-def reset(snake):
+def reset(snake: GameObject) -> None:
     """ресет"""
     snake.position.insert(-1,
                           (SCREEN_CENTER['x'],
@@ -210,7 +208,7 @@ def reset(snake):
     del snake.position[:-1]
 
 
-def handle_keys(object):
+def handle_keys(object: Snake) -> None:
     """Нажатия кнопок"""
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
