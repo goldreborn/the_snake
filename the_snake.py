@@ -59,6 +59,10 @@ class Snake(GameObject):
         super().__init__(position, body_color)
         self.head = self.position[0]
 
+    def get_head_position(snake: GameObject) -> tuple:
+        """-"""
+        return snake.position[0]
+
     def update_direction(self) -> None:
         """Update"""
         if self.direction == LEFT:
@@ -102,6 +106,18 @@ class Snake(GameObject):
             self.position.insert(0, (self.position[0][0], SCREEN_HEIGHT))
             self.position.pop(1)
 
+    def reset(self) -> None:
+        """ресет"""
+        self.position.insert(-1,
+                             (SCREEN_CENTER['x'],
+                              SCREEN_CENTER['y']))
+
+        for x, y in self.position:
+
+            draw(screen, BOARD_BACKGROUND_COLOR, [x, y, CELL_SIZE, CELL_SIZE])
+
+        del self.position[:-1]
+
     def move(self) -> None:
         """Функция движения змейки"""
         self.update_direction()
@@ -120,11 +136,6 @@ class Apple(GameObject):
 
         self.position.insert(0, (x, y,
                                  CELL_SIZE, CELL_SIZE))
-
-
-def get_head_position(snake: GameObject) -> tuple:
-    """-"""
-    return snake.position[0]
 
 
 def draw(screen: pygame.display, color: tuple, axis: list) -> None:
@@ -188,24 +199,11 @@ def main() -> None:
 
         if snake.position.count(snake.position[0]) > 1:
 
-            reset(snake)
+            snake.reset()
 
         draw_grid()
 
         pygame.display.update()
-
-
-def reset(snake: GameObject) -> None:
-    """ресет"""
-    snake.position.insert(-1,
-                          (SCREEN_CENTER['x'],
-                           SCREEN_CENTER['y']))
-
-    for x, y in snake.position:
-
-        draw(screen, BOARD_BACKGROUND_COLOR, [x, y, CELL_SIZE, CELL_SIZE])
-
-    del snake.position[:-1]
 
 
 def handle_keys(object: Snake) -> None:
