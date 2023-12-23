@@ -35,15 +35,18 @@ clock = pg.time.Clock()
 class GameObject:
     """Создаем класс GameObject"""
 
-    def __init__(self: object, position=None, body_color=None) -> None:
+    def __init__(self, position=None, body_color=None) -> None:
         self.position = position
         self.body_color = body_color
+
+    def draw(self):
+        pass
 
 
 class Grid(GameObject):
     """Класс Сетки"""
 
-    def __init__(self: object, color: tuple) -> None:
+    def __init__(self, color: tuple) -> None:
         self.color = color
 
     def draw(self):
@@ -60,13 +63,14 @@ class Grid(GameObject):
 class Snake(GameObject):
     """Создаем класс Snake"""
 
-    def __init__(self, position, body_color=SNAKE_COLOR):
+    direction = RIGHT
+
+    def __init__(self, position=None, body_color=SNAKE_COLOR):
         super().__init__(position, body_color)
         self.positions = [position]
-        self.position = 0
+        self.position = position
         self.length = 1
         self.body_color = body_color
-        self.direction = RIGHT
         self.next_direction = RIGHT
         self.tail = position
 
@@ -149,9 +153,9 @@ class Snake(GameObject):
 class Apple(GameObject):
     """Создаем класс Apple"""
 
-    def __init__(self, position, body_color=APPLE_COLOR):
+    def __init__(self, position=None, body_color=APPLE_COLOR):
         super().__init__(position, body_color)
-        self.position = self.randomize_position()
+        self.position = position
         self.body_color = body_color
 
     def randomize_position(self) -> None:
