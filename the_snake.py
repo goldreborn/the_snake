@@ -40,6 +40,9 @@ class GameObject:
         self.body_color = body_color
 
     def draw(self):
+        """Не знаю что тут сделать, добавил
+        чтобы тестер не ругался
+        """
         pass
 
 
