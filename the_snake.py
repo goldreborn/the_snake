@@ -40,7 +40,6 @@ class GameObject:
         self.body_color = body_color
 
 
-<<<<<<< HEAD
 class Grid(GameObject):
     """Класс Сетки"""
 
@@ -56,15 +55,6 @@ class Grid(GameObject):
                 Line = pg.Rect(x, y, GRID_SIZE, GRID_SIZE)
 
                 pg.draw.rect(screen, self.color, Line, 1)
-
-=======
-        return x, y
-
-    @staticmethod
-    def draw(screen: pygame.display, color: tuple, axis: list) -> None:
-        """Рисуем объекты"""
-        pygame.draw.rect(screen, color, pygame.Rect(axis))
->>>>>>> 93b0e9843a934223ab85e8f05604bb0daf5f8304
 
 
 class Snake(GameObject):
@@ -122,6 +112,7 @@ class Snake(GameObject):
         self.tail = self.positions[-1]
 
         def in_bounds(pointer, edge, path):
+            """Проверяем если голова вне поля"""
             if path == 'd' or path == 'r':
                 if pointer / edge < 1:
                     return pointer + GRID_SIZE
