@@ -45,7 +45,8 @@ class GameObject:
     def draw(cls):
         """Вызываем Ошибку если нет метода draw"""
         raise NotImplementedError(
-            f'Отсутствует метод : {currentframe().f_code.co_name}'
+            f'У суб_класса {__class__.__name__} '
+            f'отсутствует метод {currentframe().f_code.co_name}'
         )
 
     @classmethod
