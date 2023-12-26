@@ -5,7 +5,7 @@ import pygame as pg
 
 pg.init()
 
-GRID_SIZE = 20
+GRID_SIZE = 20  
 
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
@@ -15,10 +15,10 @@ UP = (0, -1)
 DOWN = (0, 1)
 LEFT = (-1, 0)
 RIGHT = (1, 0)
-SCREEN_CENTER = ((
+SCREEN_CENTER = (
     SCREEN_WIDTH / 2 - GRID_SIZE,
     SCREEN_HEIGHT / 2 - GRID_SIZE
-))
+)
 SNAKE_COLOR = (0, 255, 0)
 APPLE_COLOR = (255, 0, 0)
 BOARD_BACKGROUND_COLOR = (0, 0, 0)
@@ -39,45 +39,24 @@ class GameObject:
         self.position = position
         self.body_color = body_color
 
-    def draw(self):
-        """Не знаю что тут сделать, добавил
-        чтобы тестер не ругался
-        """
-        pass
-
-
-class Grid(GameObject):
-    """Класс Сетки"""
-
-    def __init__(self, color: tuple) -> None:
-        self.color = color
-
-    def draw(self):
-        """Рисуем Сетку"""
-        for x in range(0, GRID_WIDTH, GRID_SIZE):
-
-            for y in range(0, GRID_HEIGHT, GRID_SIZE):
-
-                Line = pg.Rect(x, y, GRID_SIZE, GRID_SIZE)
-
-                pg.draw.rect(screen, self.color, Line, 1)
+    @classmethod
+    def draw(cls, board, color, axis):
+        """Рисуем по координатам"""
+        if hasattr(GameObject, 'draw'):
+            pg.draw.rect(board, color, axis)
+        else:
+            raise NotImplementedError
 
 
 class Snake(GameObject):
     """Создаем класс Snake"""
 
-    direction = RIGHT
-
     def __init__(self, position=None, body_color=SNAKE_COLOR):
         super().__init__(position, body_color)
-        self.positions = [position]
-        self.position = position
-        self.length = 1
-        self.body_color = body_color
+        self.reset()
         self.next_direction = RIGHT
-        self.tail = position
 
-    def get_head_position(self) -> tuple:
+    def get_head_position(self):
         """Получаем и возвращаем кортеж с
         координатами головы змейки
         """
@@ -87,21 +66,32 @@ class Snake(GameObject):
         """Сбрасываем настройки змейки в начальное состояние"""
         self.positions = [SCREEN_CENTER]
         self.length = 1
+        self.direction = RIGHT
 
     def hide_tail(self):
-        """Зарисовываем хвост змейки"""
-        pg.draw.rect(screen, BOARD_BACKGROUND_COLOR,
-                     [self.tail[0], self.tail[1],
-                      GRID_SIZE, GRID_SIZE])
+        """Прячем хвост"""
+        tail = self.positions[-1]
+
+        GameObject.draw(screen, BOARD_BACKGROUND_COLOR,
+                        [tail[0], tail[1],
+                        GRID_SIZE, GRID_SIZE])
+
+        self.positions.pop()
 
     def draw(self):
         """Отрисовываем змейку"""
-        for x_axis, y_axis in self.positions:
+        head = self.get_head_position()
 
-            pg.draw.rect(screen, self.body_color, [x_axis,
-                                                   y_axis,
-                                                   GRID_SIZE,
-                                                   GRID_SIZE])
+        for x, y in self.positions:
+            Line = pg.Rect(x, y, GRID_SIZE, GRID_SIZE)
+
+            pg.draw.rect(screen, BOARD_BACKGROUND_COLOR, Line, 1)
+
+        GameObject.draw(screen, self.body_color,
+                        [head[0],
+                         head[1],
+                         GRID_SIZE,
+                         GRID_SIZE])
 
     def update_direction(self):
         """Обновляем направление движения змейки"""
@@ -116,41 +106,17 @@ class Snake(GameObject):
         """
         head = self.get_head_position()
 
-        self.tail = self.positions[-1]
+        x, y = self.direction
 
-        def in_bounds(pointer, edge, path):
-            """Проверяем если голова вне поля"""
-            if path == 'd' or path == 'r':
-                if pointer / edge < 1:
-                    return pointer + GRID_SIZE
-                else:
-                    return 0
-            else:
-                if pointer / edge > 0:
-                    return pointer - GRID_SIZE
-                else:
-                    return SCREEN_WIDTH if path == 'l' else SCREEN_HEIGHT
+        new_x_axis = (head[0] + x * GRID_SIZE) % SCREEN_WIDTH
+        new_y_axis = (head[1] + y * GRID_SIZE) % SCREEN_HEIGHT
 
-        if self.direction == LEFT:
-            self.positions.insert(0,
-                                  (in_bounds(head[0], SCREEN_WIDTH, 'l'),
-                                   head[1]))
-        elif self.direction == RIGHT:
-            self.positions.insert(0,
-                                  (in_bounds(head[0], SCREEN_WIDTH, 'r'),
-                                   head[1]))
-        elif self.direction == DOWN:
-            self.positions.insert(0,
-                                  (head[0],
-                                   in_bounds(head[1], SCREEN_HEIGHT, 'd')))
-        elif self.direction == UP:
-            self.positions.insert(0,
-                                  (head[0],
-                                   in_bounds(head[1], SCREEN_HEIGHT, 'u')))
-        else:
-            pass
+        if self.direction == LEFT or self.direction == RIGHT:
 
-        self.update_direction()
+            self.positions.insert(0, (new_x_axis, head[1]))
+        elif self.direction == DOWN or self.direction == UP:
+
+            self.positions.insert(0, (head[0], new_y_axis))
 
 
 class Apple(GameObject):
@@ -158,31 +124,26 @@ class Apple(GameObject):
 
     def __init__(self, position=None, body_color=APPLE_COLOR):
         super().__init__(position, body_color)
-        self.position = position
-        self.body_color = body_color
+        self.randomize_position()
 
     def randomize_position(self) -> None:
         """Определяем случайное место для яблока"""
-        x = randint(0, GRID_SIZE) * GRID_SIZE
-        y = randint(0, GRID_SIZE) * GRID_SIZE
-
-        self.position = (x, y)
+        self.position = (randint(0, GRID_SIZE) * GRID_SIZE,
+                         randint(0, GRID_SIZE) * GRID_SIZE)
 
     def draw(self):
-        """Функци отрисовки яблока"""
-        pg.draw.rect(screen, self.body_color,
-                     [self.position[0],
-                      self.position[1],
-                      GRID_SIZE,
-                      GRID_SIZE])
+        """Функция отрисовки яблока"""
+        GameObject.draw(screen,
+                        self.body_color,
+                        [self.position[0], self.position[1],
+                         GRID_SIZE,
+                         GRID_SIZE])
 
 
 def main() -> None:
     """Main"""
-    snake = Snake(SCREEN_CENTER, SNAKE_COLOR)
-
-    apple = Apple([], APPLE_COLOR)
-    apple.randomize_position()
+    snake = Snake()
+    apple = Apple()
 
     while True:
 
@@ -190,28 +151,25 @@ def main() -> None:
 
         handle_keys(snake)
 
-        snake.update_direction()
-        snake.move()
-        snake.draw()
-
         head = snake.get_head_position()
 
-        if apple.position == head:
-            apple.randomize_position()
-        else:
-            snake.hide_tail()
-            snake.positions.pop()
+        snake.move()
 
-            apple.draw()
-
-        if snake.positions.count(snake.positions[0]) > 1:
-
-            screen.fill(BOARD_BACKGROUND_COLOR)
+        if snake.positions.count(head) > 1:
 
             snake.reset()
+            screen.fill(BOARD_BACKGROUND_COLOR)
 
-        grid = Grid(BOARD_BACKGROUND_COLOR)
-        grid.draw()
+        if head == apple.position:
+
+            apple.randomize_position()
+            snake.length += 1
+        else:
+            snake.hide_tail()
+            apple.draw()
+
+        snake.draw()
+        snake.update_direction()
 
         pg.display.update()
 
