@@ -5,7 +5,7 @@ import pygame as pg
 
 pg.init()
 
-GRID_SIZE = 20  
+GRID_SIZE = 20
 
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
@@ -74,7 +74,7 @@ class Snake(GameObject):
 
         GameObject.draw(screen, BOARD_BACKGROUND_COLOR,
                         [tail[0], tail[1],
-                        GRID_SIZE, GRID_SIZE])
+                         GRID_SIZE, GRID_SIZE])
 
         self.positions.pop()
 
