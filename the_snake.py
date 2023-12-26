@@ -1,4 +1,6 @@
+
 from random import randint
+from inspect import currentframe
 
 import pygame as pg
 
@@ -40,12 +42,16 @@ class GameObject:
         self.body_color = body_color
 
     @classmethod
-    def draw(cls, board, color, axis):
-        """Рисуем по координатам"""
-        if hasattr(GameObject, 'draw'):
-            pg.draw.rect(board, color, axis)
-        else:
-            raise NotImplementedError
+    def draw(cls):
+        """Вызываем Ошибку если нет метода draw"""
+        raise NotImplementedError(
+            f'Отсутствует метод : {currentframe().f_code.co_name}'
+        )
+
+    @classmethod
+    def create_object(cls, board, color, axis):
+        """Рисуем новый объект"""
+        pg.draw.rect(board, color, axis)
 
 
 class Snake(GameObject):
@@ -72,26 +78,27 @@ class Snake(GameObject):
         """Прячем хвост"""
         tail = self.positions[-1]
 
-        GameObject.draw(screen, BOARD_BACKGROUND_COLOR,
-                        [tail[0], tail[1],
-                         GRID_SIZE, GRID_SIZE])
-
         self.positions.pop()
+
+        self.create_object(screen, BOARD_BACKGROUND_COLOR,
+                           [tail[0], tail[1],
+                            GRID_SIZE, GRID_SIZE])
 
     def draw(self):
         """Отрисовываем змейку"""
         head = self.get_head_position()
 
         for x, y in self.positions:
-            Line = pg.Rect(x, y, GRID_SIZE, GRID_SIZE)
 
-            pg.draw.rect(screen, BOARD_BACKGROUND_COLOR, Line, 1)
+            line = pg.Rect(x, y, GRID_SIZE, GRID_SIZE)
 
-        GameObject.draw(screen, self.body_color,
-                        [head[0],
-                         head[1],
-                         GRID_SIZE,
-                         GRID_SIZE])
+            pg.draw.rect(screen, BOARD_BACKGROUND_COLOR, line, 1)
+
+        self.create_object(screen, self.body_color,
+                           [head[0],
+                            head[1],
+                            GRID_SIZE,
+                            GRID_SIZE])
 
     def update_direction(self):
         """Обновляем направление движения змейки"""
@@ -102,7 +109,7 @@ class Snake(GameObject):
     def move(self) -> None:
         """Функция движения змейки.
         Получаем координаты головы и обновляем.
-        Хвост подтираем
+        Хвост подтираем.
         """
         head = self.get_head_position()
 
@@ -111,12 +118,7 @@ class Snake(GameObject):
         new_x_axis = (head[0] + x * GRID_SIZE) % SCREEN_WIDTH
         new_y_axis = (head[1] + y * GRID_SIZE) % SCREEN_HEIGHT
 
-        if self.direction == LEFT or self.direction == RIGHT:
-
-            self.positions.insert(0, (new_x_axis, head[1]))
-        elif self.direction == DOWN or self.direction == UP:
-
-            self.positions.insert(0, (head[0], new_y_axis))
+        self.positions.insert(0, (new_x_axis, new_y_axis))
 
 
 class Apple(GameObject):
@@ -133,11 +135,11 @@ class Apple(GameObject):
 
     def draw(self):
         """Функция отрисовки яблока"""
-        GameObject.draw(screen,
-                        self.body_color,
-                        [self.position[0], self.position[1],
-                         GRID_SIZE,
-                         GRID_SIZE])
+        self.create_object(screen,
+                           self.body_color,
+                           [self.position[0], self.position[1],
+                            GRID_SIZE,
+                            GRID_SIZE])
 
 
 def main() -> None:
@@ -155,11 +157,6 @@ def main() -> None:
 
         snake.move()
 
-        if snake.positions.count(head) > 1:
-
-            snake.reset()
-            screen.fill(BOARD_BACKGROUND_COLOR)
-
         if head == apple.position:
 
             apple.randomize_position()
@@ -167,6 +164,11 @@ def main() -> None:
         else:
             snake.hide_tail()
             apple.draw()
+
+        if snake.positions.count(head) > 1:
+
+            snake.reset()
+            screen.fill(BOARD_BACKGROUND_COLOR)
 
         snake.draw()
         snake.update_direction()
